@@ -1,0 +1,8 @@
+POST http://localhost:8080/config HTTP/1.1
+content-type: application/json
+
+{
+  "DeviceCount": 1,
+  "MetricCount": 1,
+  "Labels": [{"Name" : "interface", "Cardinality" : 7}, {"Name" : "owner", "Cardinality" : 5}]
+}
