@@ -54,6 +54,15 @@ func receiveConfig(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(&buf, "{ \"cardinality\" : %d }", cardinality * label_cardinality)
 		w.Write(buf.Bytes())
 		defer r.Body.Close()
+	case "GET":
+		w.Header().Set("Content-Type", "application/json")
+		b, err := json.Marshal(conf)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		fmt.Fprint(w, string(b))
+		defer r.Body.Close()
 	default:
 		fmt.Fprintf(w, "Only POST method is supported.")
 	}
@@ -99,6 +108,9 @@ func main() {
 	http.HandleFunc("/favicon.ico", handleIcon)
 	http.HandleFunc("/metrics", generateMetric)
 	http.HandleFunc("/config", receiveConfig)
+	// web content
+	http.Handle("/", http.FileServer(http.Dir("./www")))
+
 	if err := http.ListenAndServe(":"+strconv.Itoa(port), nil); err != nil {
 		panic(err)
 	}

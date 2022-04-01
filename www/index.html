@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+
+    <style type="text/css">
+      body { background: #35363a !important; } /* Adding !important forces the browser to overwrite the default style applied by Bootstrap */
+   </style>
+
+    <title>Metric Generator</title>
+  </head>
+  <body>
+    
+    <div class="col-lg-6 mx-auto p-3 py-md-5">
+		<main>
+			<h1 class="text-center text-light">Prometheus Metric Generator</h1>
+            <p><span class="placeholder"></span></p>
+
+            
+            <div class="mb-3">
+                <label for="config" class="form-label text-light">Current configuration</label>
+                <textarea class="form-control" id="config" rows="3"></textarea>
+            </div>
+
+            <div class="d-grid gap-2 col-6 mx-auto">
+                <button class="btn btn-primary btn-success btn-lg" onclick="changeConfig()" type="button">Change</button>
+            </div>
+            
+            <p><span class="placeholder"></span></p>
+            <div class="d-grid gap-2 col-6 mx-auto">
+                <a href="/metrics" target="_" class="btn btn-primary btn-lg" role="button">Show metrics</a>
+            </div>
+            
+		</main>
+	</div>
+
+    <script>
+        // Load all stored locations from file
+        var xmlHttp = new XMLHttpRequest();
+        xmlHttp.onreadystatechange = function() { 
+          if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+            var config = document.getElementById("config");
+            config.value = xmlHttp.responseText;
+          }
+      }
+      xmlHttp.open("GET", '/config', true); // true for asynchronous 
+      xmlHttp.send(null);
+
+      function changeConfig(position) {
+        var http = new XMLHttpRequest();
+        var url = '/config';
+        var data = document.getElementById("config").value;
+        http.open('POST', url, true);
+        //Send the proper header information along with the request
+        http.setRequestHeader('Content-type', 'application/json');
+        http.onreadystatechange = function() {//Call a function when the state changes.
+            if(http.readyState == 4 && http.status == 200) {
+                res = JSON.parse(http.responseText);
+                alert("Metric chart lines generated: " + res['cardinality']);
+            }
+        }
+        http.send(data);
+      }
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+</body>
+</html>
